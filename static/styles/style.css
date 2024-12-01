@@ -1,0 +1,89 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    color: #333;
+}
+
+/* Container */
+.container {
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    text-align: center;
+}
+
+/* Header */
+header h1 {
+    font-size: 2.5em;
+    color: #007bff;
+    margin: 0;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #555;
+}
+
+/* Main Section */
+main h2 {
+    font-size: 1.8em;
+    color: #333;
+    margin: 20px 0;
+}
+
+main p {
+    font-size: 1.1em;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Level Buttons */
+.level-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+button.level {
+    border: none;
+    padding: 15px 25px;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+button.level:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button.easy {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+button.medium {
+    background-color: #ffc107;
+    color: #ffffff;
+}
+
+button.hard {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+
+/* Footer */
+footer {
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #888;
+}
