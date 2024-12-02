@@ -2,39 +2,113 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vocabulous - Quiz</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-    <script>
-        const difficulty = "{{ difficulty }}"; // Pass difficulty from Flask to JavaScript
-        console.log("Difficulty level:", difficulty);
-    </script>
-    <script src="{{ url_for('static', filename='scripts/script.js') }}" defer></script>
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="container mt-5">
+        <header class="text-center">
             <h1>Vocabulous Quiz</h1>
-            <div class="status-bar">
-                <div id="timer">Timer: 30s</div>
-                <div id="score">Score: 0</div>
-            </div>
+            <p>Difficulty: {{ difficulty }}, Theme: {{ theme }}</p>
         </header>
-        <main>
-            <div class="question-container">
-                <!-- Sentence with dropbox for drag-and-drop -->
-                <h2 id="question"></h2>
-                <!-- Options container -->
-                <div id="options" class="options"></div>
+        <main class="mt-4">
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Generating questions...</span>
+                </div>
+                <p>Generating questions, please wait...</p>
             </div>
-            <!-- Loading spinner (hidden by default) -->
-            <div class="loading-spinner" id="loading-spinner" style="display: none;">Loading...</div>
-            <!-- Next question button -->
-            <button id="next-question" style="display: none;">Next</button>
+            <!-- Quiz Form -->
+            <form id="quiz-form" style="display: none;">
+                <div id="questions-container"></div>
+                <button type="button" class="btn btn-primary btn-block" onclick="submitQuiz()">Submit Quiz</button>
+            </form>
         </main>
-        <footer>
+        <footer class="mt-5 text-center">
             <p>© 2024 Vocabulous. All Rights Reserved.</p>
         </footer>
     </div>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <!-- Custom Script -->
+    <script>
+        $(document).ready(function() {
+            const difficulty = "{{ difficulty }}";
+            const theme = "{{ theme }}";
+            const article = "{{ article|escape }}"; // Escape to prevent JS injection
+
+            // AJAX request to generate questions
+            $.ajax({
+                type: "POST",
+                url: "/generate_questions",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    "difficulty": difficulty,
+                    "theme": theme,
+                    "article": article
+                }),
+                success: function(response) {
+                    // Hide the spinner
+                    $('#loading-spinner').hide();
+                    // Show the quiz form
+                    $('#quiz-form').show();
+
+                    // Render questions
+                    const questions = response.questions;
+                    const questionsContainer = $('#questions-container');
+                    questions.forEach(function(question, index) {
+                        const questionCard = `
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5>Question ${index + 1}</h5>
+                                <p>${question.sentence}</p>
+                                ${renderOptions(question.options, index)}
+                            </div>
+                        </div>
+                        `;
+                        questionsContainer.append(questionCard);
+                    });
+                    window.questionsData = questions; // Store for later use
+                },
+                error: function() {
+                    $('#loading-spinner').html('<p class="text-danger">An error occurred. Please try again later.</p>');
+                }
+            });
+
+            function renderOptions(options, questionIndex) {
+                let optionsHtml = '';
+                options.forEach(function(option, optionIndex) {
+                    optionsHtml += `
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="question${questionIndex}" id="q${questionIndex}_option${optionIndex}" value="${option}">
+                        <label class="form-check-label" for="q${questionIndex}_option${optionIndex}">
+                            ${option}
+                        </label>
+                    </div>
+                    `;
+                });
+                return optionsHtml;
+            }
+        });
+
+        function submitQuiz() {
+            const totalQuestions = window.questionsData.length;
+            let score = 0;
+
+            window.questionsData.forEach(function(question, index) {
+                const userAnswer = $(`input[name="question${index}"]:checked`).val();
+                if (userAnswer === question.correct_option) {
+                    score += 1;
+                }
+            });
+
+            alert(`You scored ${score} out of ${totalQuestions}`);
+        }
+    </script>
 </body>
 </html>
