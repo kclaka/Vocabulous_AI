@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulous - Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <script>
+        const difficulty = "{{ difficulty }}"; // Pass difficulty from Flask to JavaScript
+        console.log("Difficulty level:", difficulty);
+    </script>
+    <script src="{{ url_for('static', filename='scripts/script.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Vocabulous Quiz</h1>
+            <div class="status-bar">
+                <div id="timer">Timer: 30s</div>
+                <div id="score">Score: 0</div>
+            </div>
+        </header>
+        <main>
+            <div class="question-container">
+                <!-- Sentence with dropbox for drag-and-drop -->
+                <h2 id="question"></h2>
+                <!-- Options container -->
+                <div id="options" class="options"></div>
+            </div>
+            <!-- Loading spinner (hidden by default) -->
+            <div class="loading-spinner" id="loading-spinner" style="display: none;">Loading...</div>
+            <!-- Next question button -->
+            <button id="next-question" style="display: none;">Next</button>
+        </main>
+        <footer>
+            <p>© 2024 Vocabulous. All Rights Reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

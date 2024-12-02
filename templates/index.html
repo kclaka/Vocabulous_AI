@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulous - Sentence Completion</title>
+    <title>Vocabulous - Select Difficulty</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+    <script>
+        function selectDifficulty(difficulty) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/questions';
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'difficulty';
+            input.value = difficulty;
+            form.appendChild(input);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Vocabulous</h1>
-            <p>Welcome to Sentence Completion!</p>
+            <h1>Welcome to Vocabulous!</h1>
+            <p>Select your desired difficulty level to start the quiz.</p>
         </header>
-
         <main>
-            <h2>Hello, {{ user_name }}</h2>
-            <p>Pick a level to get started:</p>
-            <div class="level-buttons">
-                <button class="level easy">Easy</button>
-                <button class="level medium">Medium</button>
-                <button class="level hard">Hard</button>
+            <div class="difficulty-buttons">
+                <button class="easy" onclick="selectDifficulty('easy')">Easy</button>
+                <button class="medium" onclick="selectDifficulty('medium')">Medium</button>
+                <button class="hard" onclick="selectDifficulty('hard')">Hard</button>
             </div>
         </main>
-
         <footer>
             <p>© 2024 Vocabulous. All Rights Reserved.</p>
         </footer>
