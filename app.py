@@ -40,15 +40,15 @@ def generate_questions(difficulty, theme, article):
 
     # Build the prompt
     prompt = f"""
-You are an AI assistant tasked with generating a JSON object for an English sentence completion quiz. The quiz is designed for English learners and must contain exactly 10 questions, tailored to the given difficulty level: "{difficulty}", and the theme: "{theme}". Your output must strictly follow the JSON format provided below, without any additional explanations, comments, or conversational text.
+You are an AI assistant tasked with generating a JSON object for an English language learning quiz. The quiz is designed for English learners and must contain exactly 10 sentence completion questions, tailored to the given difficulty level: "{difficulty}", and the theme: "{theme}". Your output must strictly follow the JSON format provided below, without any additional explanations, comments, or conversational text.
 
 Format:
 {{
   "questions": [
     {{
-      "sentence": "<string with a blank>",
-      "options": ["<string>", "<string>", "<string>", "<string>"],
-      "correct_option": "<string>"
+      "sentence": "<sentence with a blank represented by '____'>",
+      "options": ["<option1>", "<option2>", "<option3>", "<option4>"],
+      "correct_option": "<correct_option>"
     }},
     ...
   ]
@@ -56,10 +56,11 @@ Format:
 
 ### Instructions:
 1. Each question should provide an incomplete sentence with one blank (indicated by `____`).
-2. Offer four answer options, where only one option is correct. The other three options must be plausible but incorrect.
-3. Ensure the sentences and options are appropriate for English learners and match the given difficulty level: "{difficulty}".
-4. All sentences and options should relate to the theme: "{theme}".
-5. Do not include any explanatory text or headers in the response. Return only a valid JSON object in the format below, not as a string.
+2. Focus on key English language learning aspects such as vocabulary, grammar, idioms, and common phrases relevant to the theme.
+3. Offer four answer options, where only one option is correct. The other three options must be plausible but incorrect.
+4. Ensure the sentences and options are appropriate for English learners and match the given difficulty level: "{difficulty}".
+5. All sentences and options should relate to the theme: "{theme}".
+6. Do not include any explanatory text or headers in the response. Return only a valid JSON object in the format below, not as a string.
 """
 
     # Include article text if provided

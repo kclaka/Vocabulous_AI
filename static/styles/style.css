@@ -28,3 +28,50 @@ footer p {
     align-items: center;
     justify-content: center;
 }
+
+/* Option buttons for drag and drop */
+.option-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+.option-button:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+}
+
+.dropbox {
+    display: inline-block;
+    min-width: 100px;
+    padding: 5px;
+    border: 2px dashed #007bff;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0 5px;
+    background-color: #f8f9fa;
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.dropbox.correct {
+    border-color: #28a745 !important;
+    background-color: #d4edda !important;
+    box-shadow: 0 0 10px #28a745;
+}
+
+.dropbox.incorrect {
+    border-color: #dc3545 !important;
+    background-color: #f8d7da !important;
+    box-shadow: 0 0 10px #dc3545;
+}
+
+/* Disable dragging if option is not draggable */
+.option-button[draggable="false"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

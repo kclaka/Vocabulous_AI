@@ -13,6 +13,7 @@
         <header class="text-center">
             <h1>Vocabulous Quiz</h1>
             <p>Difficulty: {{ difficulty }}, Theme: {{ theme }}</p>
+            <p id="score-display">Score: 0</p>
         </header>
         <main class="mt-4">
             <!-- Loading Spinner -->
@@ -22,11 +23,23 @@
                 </div>
                 <p>Generating questions, please wait...</p>
             </div>
-            <!-- Quiz Form -->
-            <form id="quiz-form" style="display: none;">
-                <div id="questions-container"></div>
-                <button type="button" class="btn btn-primary btn-block" onclick="submitQuiz()">Submit Quiz</button>
-            </form>
+            <!-- Quiz Container -->
+            <div id="quiz-container" style="display: none;">
+                <div id="question-card" class="card mb-4">
+                    <div class="card-body">
+                        <h5 id="question-number"></h5>
+                        <p id="question-sentence"></p>
+                        <div id="dropbox-container">
+                            <!-- Dropbox will be inserted here -->
+                        </div>
+                        <div id="options-container" class="mt-3">
+                            <!-- Options will be inserted here -->
+                        </div>
+                        <!-- Removed the inline onclick attribute -->
+                        <button id="next-button" class="btn btn-primary mt-3" style="display: none;">Next Question</button>
+                    </div>
+                </div>
+            </div>
         </main>
         <footer class="mt-5 text-center">
             <p>© 2024 Vocabulous. All Rights Reserved.</p>
@@ -42,6 +55,10 @@
             const theme = "{{ theme }}";
             const article = "{{ article|escape }}"; // Escape to prevent JS injection
 
+            let questionsData = [];
+            let currentQuestionIndex = 0;
+            let score = 0;
+
             // AJAX request to generate questions
             $.ajax({
                 type: "POST",
@@ -55,60 +72,127 @@
                 success: function(response) {
                     // Hide the spinner
                     $('#loading-spinner').hide();
-                    // Show the quiz form
-                    $('#quiz-form').show();
+                    // Show the quiz container
+                    $('#quiz-container').show();
 
-                    // Render questions
-                    const questions = response.questions;
-                    const questionsContainer = $('#questions-container');
-                    questions.forEach(function(question, index) {
-                        const questionCard = `
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h5>Question ${index + 1}</h5>
-                                <p>${question.sentence}</p>
-                                ${renderOptions(question.options, index)}
-                            </div>
-                        </div>
-                        `;
-                        questionsContainer.append(questionCard);
-                    });
-                    window.questionsData = questions; // Store for later use
+                    // Store questions
+                    questionsData = response.questions;
+
+                    // Render the first question
+                    renderQuestion();
                 },
                 error: function() {
                     $('#loading-spinner').html('<p class="text-danger">An error occurred. Please try again later.</p>');
                 }
             });
 
-            function renderOptions(options, questionIndex) {
-                let optionsHtml = '';
-                options.forEach(function(option, optionIndex) {
-                    optionsHtml += `
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="question${questionIndex}" id="q${questionIndex}_option${optionIndex}" value="${option}">
-                        <label class="form-check-label" for="q${questionIndex}_option${optionIndex}">
+            function renderQuestion() {
+                // Clear previous content
+                $('#options-container').empty();
+                $('#dropbox-container').empty();
+                $('#next-button').hide();
+
+                const question = questionsData[currentQuestionIndex];
+                $('#question-number').text(`Question ${currentQuestionIndex + 1}`);
+
+                // Prepare the sentence with blanks
+                const sentence = question.sentence.replace('____', '<span id="dropbox" class="dropbox"></span>');
+                $('#question-sentence').html(sentence);
+
+                // Render options as draggable items
+                question.options.forEach(function(option) {
+                    const optionButton = `
+                        <span class="option-button" draggable="true" data-option="${option}">
                             ${option}
-                        </label>
-                    </div>
+                        </span>
                     `;
+                    $('#options-container').append(optionButton);
                 });
-                return optionsHtml;
+
+                // Add event listeners for drag and drop
+                initDragAndDrop();
             }
-        });
 
-        function submitQuiz() {
-            const totalQuestions = window.questionsData.length;
-            let score = 0;
+            function initDragAndDrop() {
+                const optionButtons = document.querySelectorAll('.option-button');
+                const dropbox = document.getElementById('dropbox');
 
-            window.questionsData.forEach(function(question, index) {
-                const userAnswer = $(`input[name="question${index}"]:checked`).val();
-                if (userAnswer === question.correct_option) {
-                    score += 1;
+                optionButtons.forEach(button => {
+                    button.addEventListener('dragstart', dragStart);
+                });
+
+                dropbox.addEventListener('dragover', dragOver);
+                dropbox.addEventListener('drop', drop);
+            }
+
+            function dragStart(e) {
+                e.dataTransfer.setData('text/plain', e.target.getAttribute('data-option'));
+                e.dataTransfer.effectAllowed = 'move';
+            }
+
+            function dragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+            }
+
+            function drop(e) {
+                e.preventDefault();
+                const selectedOption = e.dataTransfer.getData('text/plain');
+                e.target.textContent = selectedOption;
+                checkAnswer(selectedOption);
+            }
+
+            function checkAnswer(selectedOption) {
+                const question = questionsData[currentQuestionIndex];
+                const dropbox = $('#dropbox');
+
+                if (selectedOption === question.correct_option) {
+                    // Correct answer
+                    dropbox.addClass('correct');
+                    score++;
+                } else {
+                    // Incorrect answer
+                    dropbox.addClass('incorrect');
+                }
+
+                // Update score display
+                $('#score-display').text(`Score: ${score}`);
+
+                // Disable further interaction
+                $('.option-button').attr('draggable', false);
+                $('#dropbox').off('dragover drop');
+
+                // Show next button or finish quiz
+                if (currentQuestionIndex < questionsData.length - 1) {
+                    $('#next-button').show();
+                } else {
+                    $('#next-button').text('Finish Quiz').show();
+                }
+            }
+
+            // Attach event listener to the next-button
+            $('#next-button').on('click', function() {
+                if (currentQuestionIndex < questionsData.length - 1) {
+                    currentQuestionIndex++;
+                    renderQuestion();
+                    //nextQuestion();
+                } else {
+                    finishQuiz();
                 }
             });
 
-            alert(`You scored ${score} out of ${totalQuestions}`);
-        }
+            function nextQuestion() {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+
+            function finishQuiz() {
+                alert(`Quiz completed! Your final score is ${score} out of ${questionsData.length}.`);
+                // Optionally, redirect to a results page or restart the quiz
+                // For example, reload the page:
+                // location.reload();
+            }
+        });
     </script>
 </body>
 </html>
