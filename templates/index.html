@@ -2,40 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulous - Select Difficulty</title>
+    <title>Vocabulous - Select Options</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
-    <script>
-        function selectDifficulty(difficulty) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/questions';
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'difficulty';
-            input.value = difficulty;
-            form.appendChild(input);
-            document.body.appendChild(form);
-            form.submit();
-        }
-    </script>
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="container mt-5">
+        <header class="text-center">
             <h1>Welcome to Vocabulous!</h1>
-            <p>Select your desired difficulty level to start the quiz.</p>
+            <p>Select your desired options to start the quiz.</p>
         </header>
-        <main>
-            <div class="difficulty-buttons">
-                <button class="easy" onclick="selectDifficulty('easy')">Easy</button>
-                <button class="medium" onclick="selectDifficulty('medium')">Medium</button>
-                <button class="hard" onclick="selectDifficulty('hard')">Hard</button>
-            </div>
+        <main class="mt-5">
+            <form action="/questions" method="POST">
+                <div class="form-group">
+                    <label for="difficulty">Select Difficulty Level:</label>
+                    <select class="form-control" id="difficulty" name="difficulty" required>
+                        <option value="">-- Select Difficulty --</option>
+                        <option value="Easy">Easy</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="theme">Select Theme:</label>
+                    <select class="form-control" id="theme" name="theme" required>
+                        <option value="">-- Select Theme --</option>
+                        <option value="Science">Science</option>
+                        <option value="Technology">Technology</option>
+                        <option value="History">History</option>
+                        <option value="Literature">Literature</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Food">Food</option>
+                        <option value="Hip Hop">Hip Hop</option>
+                        <option value="Music">Music</option>
+                        <!-- Add more themes as needed -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="article">Provide a text (optional, max 150 words):</label>
+                    <textarea class="form-control" id="article" name="article" rows="5" maxlength="1000" placeholder="Paste your text here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Start Quiz</button>
+            </form>
         </main>
-        <footer>
+        <footer class="mt-5 text-center">
             <p>© 2024 Vocabulous. All Rights Reserved.</p>
         </footer>
     </div>
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
